@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/style.css" />
+    <title>E-GENIUS Admin</title>
+  </head>
+
+  <body>
+    <div id="home">
+      <div id="admin-screen">
+        <div class="header">
+          <h5 class="header-logo">E-Genius</h5>
+          <h3 class="header-username">Admin Panel</h3>
+        </div>
+        <div class="buzzes-list-container">
+          <div id="buzzes-list"></div>
+        </div>
+        <div class="buzzer-button-container">
+          <button id="disable-button" class="buzzer-button">disable</button>
+          <button id="clear-button" class="buzzer-button">clear</button>
+        </div>
+        <div class="enable-button-container">
+          <div class="enable-button red-enable" data-time="15"></div>
+          <div class="enable-button blue-enable" data-time="20"></div>
+          <div class="enable-button green-enable" data-time="45"></div>
+          <div id="enable-timer">0</div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script src="../../socket.io/socket.io.js"></script>
+  <script type="module" src="../assets/admin.js"></script>
+</html>
