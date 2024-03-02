@@ -182,7 +182,7 @@ h6 {
 
 #alert {
   height: 4rem;
-  bottom: -3.5rem;
+  bottom: -4.5rem;
   position: absolute;
   transition: all 0.2s ease-in-out;
 }
@@ -228,7 +228,7 @@ h6 {
 #buzzer {
   height: 14rem;
   width: 14rem;
-  background-color: rgb(255, 110, 110);
+  background-color: rgb(110, 255, 110);
   border-radius: 50%;
   border: 4px dashed black;
   transition: all 0.1s ease-in-out;
@@ -253,14 +253,14 @@ h6 {
 }
 
 #buzzer:hover {
-  background-color: rgb(191, 0, 0);
+  background-color: green;
 }
 
 #buzzer.inactive {
-  background-color: rgb(64, 0, 0);
+  background-color: rgb(255, 110, 110);
   border: 2px solid black;
   cursor: default;
-  color: rgb(128, 0, 0);
+  color: black;
 }
 
 #connected-page {
