@@ -5,6 +5,9 @@ const disableButton = document.querySelector("#disable-button");
 const clearButton = document.querySelector("#clear-button");
 const enableButtons = document.querySelectorAll(".enable-button");
 const timer = document.querySelector("#enable-timer");
+const buzzerSound = document.querySelector("#buzzer-sound");
+
+let buzerSoundTimeoutId;
 
 const socket = io("/admin");
 
@@ -81,5 +84,13 @@ socket.on("cleared", () => {
 });
 
 socket.on("updatedBuzzed", (data) => {
+  if (data.length > 0) {
+    clearTimeout(buzerSoundTimeoutId);
+    buzzerSound.currentTime = 0;
+    buzzerSound.play();
+    buzerSoundTimeoutId = setTimeout(() => {
+      buzzerSound.pause();
+    }, 500);
+  }
   buzzesListElement.innerHTML = buzzesList(data);
 });
