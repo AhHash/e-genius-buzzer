@@ -12,7 +12,8 @@ app.get("/admin", (_, res) => {
   res.sendFile(__dirname + "/public/pages/admin.html");
 });
 
-let connected_users = [];
+let registeredUsers = [];
+let connectedUsers = [];
 let userNames = [];
 let buzzedUsers = [];
 let acceptBuzzes = false;
@@ -34,12 +35,27 @@ io.of("/").on("connect", (socket) => {
   } else if (!team) {
     socket.emit("badLogin", "noTeam");
     socket.disconnect();
+  } else if (
+    !registeredUsers
+      .map((registeredUser) => registeredUser.userName)
+      .includes(userName)
+  ) {
+    socket.emit("badLogin", "userNameNotRegistered");
+    socket.disconnect();
   } else if (userNames.includes(userName)) {
-    socket.emit("badLogin", "usernameExists");
+    socket.emit("badLogin", "userNameExists");
     socket.disconnect();
   } else {
     userNames.push(userName);
-    connected_users.push({ userName, id: socket.id, team });
+    connectedUsers.push({ userName, id: socket.id, team });
+    registeredUsers.map((registeredUser) => {
+      if (!registeredUser.userName == userName) {
+        return registeredUser;
+      }
+      registeredUser.connected = 1;
+      return registeredUser;
+    });
+    io.of("/admin").emit("updateRegisteredUsers", registeredUsers);
   }
 
   socket.on("buzz", () => {
@@ -85,21 +101,45 @@ io.of("/").on("connect", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    connected_users = connected_users.filter(
+    connectedUsers = connectedUsers.filter(
       ({ userName: connectedUserName }) => {
         return connectedUserName != userName;
       }
     );
+    registeredUsers = registeredUsers.map((registeredUser) => {
+      if (userName == registeredUser.userName) {
+        registeredUser.connected = false;
+      }
+      return registeredUser;
+    });
     userNames = userNames.filter((connectedUserName) => {
       return connectedUserName != userName;
     });
     buzzedUsers = buzzedUsers.filter(({ userName: buzzerUser }) => {
       return buzzerUser != userName;
     });
+
+    io.of("/admin").emit("updateRegisteredUsers", registeredUsers);
   });
 });
 
 io.of("/admin").on("connect", (socket) => {
+  socket.on("registerUser", (userName) => {
+    if (
+      registeredUsers
+        .map((registeredUser) => registeredUser.userName)
+        .includes(userName)
+    ) {
+      socket.emit("Username already registered!");
+    } else {
+      registeredUsers.push({
+        userName: userName.toLowerCase().trim(),
+        connected: false,
+      });
+      io.of("/admin").emit("updateRegisteredUsers", registeredUsers);
+    }
+  });
+
   socket.on("enableBuzzer", (time) => {
     if (acceptBuzzes) {
       return;

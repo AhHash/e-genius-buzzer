@@ -1,4 +1,4 @@
-import { buzzesList } from "./components.js";
+import { buzzesList, registeredUsersList } from "./components.js";
 
 const buzzesListElement = document.querySelector("#buzzes-list");
 const disableButton = document.querySelector("#disable-button");
@@ -6,6 +6,7 @@ const clearButton = document.querySelector("#clear-button");
 const enableButtons = document.querySelectorAll(".enable-button");
 const timer = document.querySelector("#enable-timer");
 const buzzerSound = document.querySelector("#buzzer-sound");
+const rightSide = document.querySelector(".right-side");
 
 let buzerSoundTimeoutId;
 
@@ -23,7 +24,25 @@ const clearBuzzes = () => {
   socket.emit("clearBuzzes");
 };
 
+const registerUser = (userName) => {
+  socket.emit("registerUser", userName);
+};
+
 buzzesListElement.innerHTML = buzzesList();
+
+let addUserButton;
+let addUserInput;
+
+const initializeRegisteredUsers = (registeredUsers) => {
+  rightSide.innerHTML = registeredUsersList(registeredUsers);
+  addUserButton = document.querySelector("#add-button");
+  addUserInput = document.querySelector(".user-input");
+  addUserButton.addEventListener("click", () => {
+    registerUser(addUserInput.value);
+  });
+};
+
+initializeRegisteredUsers();
 
 disableButton.setAttribute("disabled", true);
 clearButton.setAttribute("disabled", true);
@@ -96,4 +115,8 @@ socket.on("updatedBuzzed", (data) => {
     }, 500);
   }
   buzzesListElement.innerHTML = buzzesList(data);
+});
+
+socket.on("updateRegisteredUsers", (registeredUsers) => {
+  initializeRegisteredUsers(registeredUsers);
 });

@@ -84,3 +84,47 @@ export const buzzesList = (data) => {
             </ol>
    `;
 };
+
+export const registeredUsersList = (registeredUsers = []) => {
+  return `
+        <h3 class="users-text">Users</h3>
+          <ul class="users-list">
+          ${
+            registeredUsers.length
+              ? registeredUsers
+                  .map(({ userName, connected }) => {
+                    return `
+            <li>
+              <div class="user-item ${connected && "connected"}">
+                <div class="user-info">
+                  <h4 class="user-name">${userName}</h4>
+                  <p class="user-status">${
+                    connected ? "connected" : "pending"
+                  }</p>
+                </div>
+                <div class="user-buttons">
+                  <button data-username="${userName}" class="user-button">X</button>
+                </div>
+              </div>
+            </li>      
+            `;
+                  })
+                  .join("")
+              : `<h4 class="no-registered-users-text">No registered users!</h4>`
+          }
+            <hr />
+            <li>
+              <div class="user-item">
+                <input
+                  type="text"
+                  class="user-input"
+                  placeholder="add new user"
+                />
+                <div class="user-buttons">
+                  <button class="user-button" id="add-button">Add</button>
+                </div>
+              </div>
+            </li>
+          </ul>
+  `;
+};

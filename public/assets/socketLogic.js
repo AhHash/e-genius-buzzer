@@ -77,8 +77,12 @@ export const joinRoom = (userName, team) => {
       case "noTeam":
         errorMessage = "Please select a team!";
         break;
-      case "usernameExists":
+      case "userNameExists":
         errorMessage = "Username already exists. Please pick a different one!";
+        break;
+      case "userNameNotRegistered":
+        errorMessage =
+          "Username not registered. Please contact the organizers!";
         break;
       default:
         errorMessage = "An error occured. Could not connect!";
