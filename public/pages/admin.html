@@ -15,22 +15,64 @@
           hidden
           src="../assets/buzzer_sound.mp3"
         ></audio>
-        <div class="header">
-          <h5 class="header-logo">E-Genius</h5>
-          <h3 class="header-username">Admin Panel</h3>
+        <div class="left-side">
+          <div class="header">
+            <h5 class="header-logo">E-Genius</h5>
+            <h3 class="header-username">Admin Panel</h3>
+          </div>
+          <div class="buzzes-list-container">
+            <div id="buzzes-list"></div>
+          </div>
+          <div class="buzzer-button-container">
+            <button id="disable-button" class="buzzer-button">disable</button>
+            <button id="clear-button" class="buzzer-button">clear</button>
+          </div>
+          <div class="enable-button-container">
+            <div class="enable-button red-enable" data-time="15"></div>
+            <div class="enable-button blue-enable" data-time="20"></div>
+            <div class="enable-button green-enable" data-time="45"></div>
+            <div id="enable-timer">0</div>
+          </div>
         </div>
-        <div class="buzzes-list-container">
-          <div id="buzzes-list"></div>
-        </div>
-        <div class="buzzer-button-container">
-          <button id="disable-button" class="buzzer-button">disable</button>
-          <button id="clear-button" class="buzzer-button">clear</button>
-        </div>
-        <div class="enable-button-container">
-          <div class="enable-button red-enable" data-time="15"></div>
-          <div class="enable-button blue-enable" data-time="20"></div>
-          <div class="enable-button green-enable" data-time="45"></div>
-          <div id="enable-timer">0</div>
+        <div class="right-side">
+          <h3 class="users-text">Users</h3>
+          <ul class="users-list">
+            <li>
+              <div class="user-item connected">
+                <div class="user-info">
+                  <h4 class="user-name">Ahmed</h4>
+                  <p class="user-status">connected</p>
+                </div>
+                <div class="user-buttons">
+                  <button class="user-button">X</button>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="user-item">
+                <div class="user-info">
+                  <h4 class="user-name">Ahmed</h4>
+                  <p class="user-status">pending</p>
+                </div>
+                <div class="user-buttons">
+                  <button class="user-button">X</button>
+                </div>
+              </div>
+            </li>
+            <hr />
+            <li>
+              <div class="user-item">
+                <input
+                  type="text"
+                  class="user-input"
+                  placeholder="add new user"
+                />
+                <div class="user-buttons">
+                  <button class="user-button">Add</button>
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

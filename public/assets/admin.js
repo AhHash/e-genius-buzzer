@@ -34,6 +34,9 @@ const colors = ["red", "blue", "green"];
 colors.forEach((color) => {
   const enableButton = document.querySelector(`.${color}-enable`);
   enableButton.addEventListener("click", () => {
+    if ([...enableButton.classList].includes("disabled")) {
+      return;
+    }
     enableBuzzer(Number(enableButton.dataset.time));
   });
 });

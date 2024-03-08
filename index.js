@@ -101,6 +101,10 @@ io.of("/").on("connect", (socket) => {
 
 io.of("/admin").on("connect", (socket) => {
   socket.on("enableBuzzer", (time) => {
+    if (acceptBuzzes) {
+      return;
+    }
+
     acceptBuzzes = true;
     buzzedUsers = [];
     io.of("/admin").emit("updatedBuzzed", buzzedUsers);
