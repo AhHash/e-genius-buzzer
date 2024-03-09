@@ -59,6 +59,8 @@ io.use((socket, next) => {
 });
 
 io.of("/").on("connect", (socket) => {
+  socket.emit("updatedBuzzed", getBuzzedUsers());
+
   const userName = socket.userName;
   const team = socket.team;
 
@@ -126,9 +128,11 @@ io.of("/").on("connect", (socket) => {
 });
 
 io.of("/admin").on("connect", (socket) => {
+  socket.emit("updatedBuzzed", getBuzzedUsers());
   socket.emit("updateRegisteredUsers", getRegisteredUsers());
   socket.on("registerUser", (userName) => {
     if (getUserNames().includes(userName)) {
+      // TODO
       socket.emit("Username already registered!");
     } else {
       users.push({
@@ -148,6 +152,7 @@ io.of("/admin").on("connect", (socket) => {
 
   socket.on("removeRegisteredUser", (userName) => {
     if (!getUserNames().includes(userName)) {
+      // TODO
       socket.emit("Username not registered!");
     } else {
       removeRegisteredUser(userName);
