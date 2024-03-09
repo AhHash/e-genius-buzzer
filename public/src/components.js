@@ -103,7 +103,7 @@ export const registeredUsersList = (registeredUsers = []) => {
                   }</p>
                 </div>
                 <div class="user-buttons">
-                  <button data-username="${userName}" class="user-button">X</button>
+                  <button data-username="${userName}" class="user-button delete-user">X</button>
                 </div>
               </div>
             </li>      

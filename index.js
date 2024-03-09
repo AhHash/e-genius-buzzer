@@ -2,6 +2,8 @@ const http = require("http");
 const express = require("express");
 const { Server } = require("socket.io");
 
+const { formatTime } = require("./utils/formatTime.js");
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -12,50 +14,73 @@ app.get("/admin", (_, res) => {
   res.sendFile(__dirname + "/public/pages/admin.html");
 });
 
-let registeredUsers = [];
-let connectedUsers = [];
-let userNames = [];
-let buzzedUsers = [];
 let acceptBuzzes = false;
+let users = [];
+
+const getUser = (userName) => {
+  return users.find((user) => user.userName == userName);
+};
+const getUserNames = () => {
+  return users.map(({ userName }) => userName);
+};
+const resetBuzzedUsers = () => {
+  users.forEach((user) => {
+    user.buzzStatus = { buzzed: false, time: 0, color: "" };
+  });
+};
+const getBuzzedUsers = () => {
+  return users.reduce(
+    (buzzers, { userName, buzzStatus: { buzzed, time, color } }) => {
+      if (buzzed) {
+        buzzers.push({ userName, time, color });
+      }
+      return buzzers;
+    },
+    []
+  );
+};
+const getRegisteredUsers = () => {
+  return users.map(({ userName, connected }) => {
+    return { userName, connected };
+  });
+};
+const removeRegisteredUser = (userName) => {
+  io.sockets.sockets.get(getUser(userName).id).disconnect();
+  users = users.filter((user) => {
+    return user.userName != userName;
+  });
+};
 
 io.use((socket, next) => {
-  socket.userName = socket.request._query.userName;
-  socket.team = socket.request._query.team;
+  socket.userName = socket.request._query.userName.toLowerCase().trim();
+  socket.team = socket.request._query.team.toLowerCase().trim();
   socket.active = false;
   next();
 });
 
 io.of("/").on("connect", (socket) => {
-  const userName = socket.userName.toLowerCase().trim();
-  const team = socket.team.toLowerCase().trim();
+  const userName = socket.userName;
+  const team = socket.team;
+
+  const user = getUser(userName);
 
   if (!userName) {
-    socket.emit("badLogin", "noUsername");
+    socket.emit("badLogin", "noUserName");
     socket.disconnect();
   } else if (!team) {
     socket.emit("badLogin", "noTeam");
     socket.disconnect();
-  } else if (
-    !registeredUsers
-      .map((registeredUser) => registeredUser.userName)
-      .includes(userName)
-  ) {
+  } else if (!user) {
     socket.emit("badLogin", "userNameNotRegistered");
     socket.disconnect();
-  } else if (userNames.includes(userName)) {
-    socket.emit("badLogin", "userNameExists");
+  } else if (user.connected) {
+    socket.emit("badLogin", "userNameAlreadyConnected");
     socket.disconnect();
   } else {
-    userNames.push(userName);
-    connectedUsers.push({ userName, id: socket.id, team });
-    registeredUsers.map((registeredUser) => {
-      if (!registeredUser.userName == userName) {
-        return registeredUser;
-      }
-      registeredUser.connected = 1;
-      return registeredUser;
-    });
-    io.of("/admin").emit("updateRegisteredUsers", registeredUsers);
+    user.connected = true;
+    user.team = team;
+    user.id = socket.id;
+    io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
   }
 
   socket.on("buzz", () => {
@@ -63,37 +88,26 @@ io.of("/").on("connect", (socket) => {
       return;
     }
 
-    const buzzTime = new Intl.DateTimeFormat("en-us", {
-      minute: "2-digit",
-      second: "2-digit",
-      fractionalSecondDigits: "3",
-    }).format(new Date());
-
     socket.emit("inactive");
 
-    reducedBuzzers = buzzedUsers.reduce(
-      (buzzers, buzzer) => {
-        buzzers.userNames.push(buzzer.userName);
-        buzzers.colors.push(buzzer.color);
-        return buzzers;
-      },
-      { userNames: [], colors: [] }
-    );
-
-    if (!reducedBuzzers.userNames.includes(userName)) {
-      if (!reducedBuzzers.colors.includes(team)) {
-        buzzedUsers.push({
-          userName,
-          time: buzzTime,
-          color: team,
-        });
-      } else {
-        buzzedUsers.push({
-          userName,
-          time: buzzTime,
-          color: "gray",
-        });
+    const buzzedColors = users.reduce((colors, buzzer) => {
+      if (buzzer.buzzStatus.buzzed) {
+        colors.push(buzzer.team);
       }
+      return colors;
+    }, []);
+
+    if (!user.buzzStatus.buzzed) {
+      user.buzzStatus.buzzed = true;
+      user.buzzStatus.time = formatTime();
+
+      if (!buzzedColors.includes(team)) {
+        user.buzzStatus.color = team;
+      } else {
+        user.buzzStatus.color = "gray";
+      }
+
+      const buzzedUsers = getBuzzedUsers();
 
       io.of("/admin").emit("updatedBuzzed", buzzedUsers);
       io.emit("updatedBuzzed", buzzedUsers);
@@ -101,42 +115,43 @@ io.of("/").on("connect", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    connectedUsers = connectedUsers.filter(
-      ({ userName: connectedUserName }) => {
-        return connectedUserName != userName;
+    users.forEach((user) => {
+      if (user.userName == userName) {
+        user.connected = false;
       }
-    );
-    registeredUsers = registeredUsers.map((registeredUser) => {
-      if (userName == registeredUser.userName) {
-        registeredUser.connected = false;
-      }
-      return registeredUser;
-    });
-    userNames = userNames.filter((connectedUserName) => {
-      return connectedUserName != userName;
-    });
-    buzzedUsers = buzzedUsers.filter(({ userName: buzzerUser }) => {
-      return buzzerUser != userName;
     });
 
-    io.of("/admin").emit("updateRegisteredUsers", registeredUsers);
+    io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
   });
 });
 
 io.of("/admin").on("connect", (socket) => {
+  socket.emit("updateRegisteredUsers", getRegisteredUsers());
   socket.on("registerUser", (userName) => {
-    if (
-      registeredUsers
-        .map((registeredUser) => registeredUser.userName)
-        .includes(userName)
-    ) {
+    if (getUserNames().includes(userName)) {
       socket.emit("Username already registered!");
     } else {
-      registeredUsers.push({
+      users.push({
         userName: userName.toLowerCase().trim(),
+        team: "",
+        id: "",
         connected: false,
+        buzzStatus: {
+          buzzed: false,
+          time: 0,
+          color: "",
+        },
       });
-      io.of("/admin").emit("updateRegisteredUsers", registeredUsers);
+      io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
+    }
+  });
+
+  socket.on("removeRegisteredUser", (userName) => {
+    if (!getUserNames().includes(userName)) {
+      socket.emit("Username not registered!");
+    } else {
+      removeRegisteredUser(userName);
+      io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
     }
   });
 
@@ -146,7 +161,9 @@ io.of("/admin").on("connect", (socket) => {
     }
 
     acceptBuzzes = true;
-    buzzedUsers = [];
+
+    resetBuzzedUsers();
+    const buzzedUsers = getBuzzedUsers();
     io.of("/admin").emit("updatedBuzzed", buzzedUsers);
     io.emit("updatedBuzzed", buzzedUsers);
 
@@ -163,7 +180,9 @@ io.of("/admin").on("connect", (socket) => {
 
   socket.on("clearBuzzes", () => {
     acceptBuzzes = false;
-    buzzedUsers = [];
+
+    resetBuzzedUsers();
+    const buzzedUsers = getBuzzedUsers();
 
     io.of("/admin").emit("cleared");
     io.of("/admin").emit("updatedBuzzed", buzzedUsers);

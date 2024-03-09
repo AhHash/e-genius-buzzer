@@ -28,6 +28,10 @@ const registerUser = (userName) => {
   socket.emit("registerUser", userName);
 };
 
+const removeRegisteredUser = (userName) => {
+  socket.emit("removeRegisteredUser", userName);
+};
+
 buzzesListElement.innerHTML = buzzesList();
 
 let addUserButton;
@@ -35,10 +39,16 @@ let addUserInput;
 
 const initializeRegisteredUsers = (registeredUsers) => {
   rightSide.innerHTML = registeredUsersList(registeredUsers);
+  const deleteUserButtons = document.querySelectorAll(".delete-user");
   addUserButton = document.querySelector("#add-button");
   addUserInput = document.querySelector(".user-input");
   addUserButton.addEventListener("click", () => {
     registerUser(addUserInput.value);
+  });
+  deleteUserButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      removeRegisteredUser(button.dataset.username);
+    });
   });
 };
 

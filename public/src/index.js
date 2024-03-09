@@ -3,7 +3,7 @@ import { joinRoom } from "./socketLogic.js";
 
 const home = document.querySelector("#home");
 
-const main = () => {
+export const main = () => {
   let userName = "";
   let team = "";
 

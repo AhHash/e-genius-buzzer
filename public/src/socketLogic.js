@@ -1,7 +1,8 @@
-import { changeHTML } from "./index.js";
+import { changeHTML, main } from "./index.js";
 import { connectedPage, buzzesList } from "./components.js";
 
 export const joinRoom = (userName, team) => {
+  let connected = false;
   let buzzesListElement;
   let loginTimoutId;
   let alertResetTimeoutId;
@@ -42,12 +43,15 @@ export const joinRoom = (userName, team) => {
 
   socket.on("connect", () => {
     loginTimoutId = setTimeout(() => {
+      connected = true;
       changeHTML(connectedPage(userName));
       buzzesListElement = document.querySelector("#buzzes-list");
       buzzer = document.querySelector("#buzzer");
       buzzer.classList.add("inactive");
       buzzer.addEventListener("click", () => {
-        socket.emit("buzz");
+        if (active) {
+          socket.emit("buzz");
+        }
       });
     }, 1250);
   });
@@ -71,19 +75,20 @@ export const joinRoom = (userName, team) => {
   socket.on("badLogin", (reason) => {
     let errorMessage;
     switch (reason) {
-      case "noUsername":
+      case "noUserName":
         errorMessage = "Please enter a valid username!";
         break;
       case "noTeam":
         errorMessage = "Please select a team!";
         break;
-      case "userNameExists":
-        errorMessage = "Username already exists. Please pick a different one!";
-        break;
       case "userNameNotRegistered":
         errorMessage =
           "Username not registered. Please contact the organizers!";
         break;
+      case "userNameAlreadyConnected":
+        errorMessage = "Username already exists. Please pick a different one!";
+        break;
+
       default:
         errorMessage = "An error occured. Could not connect!";
         break;
@@ -102,6 +107,8 @@ export const joinRoom = (userName, team) => {
 
   socket.on("disconnect", () => {
     clearTimeout(loginTimoutId);
-    console.log("Disconnected!");
+    if (connected) {
+      main();
+    }
   });
 };
