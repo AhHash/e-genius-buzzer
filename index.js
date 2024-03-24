@@ -25,19 +25,23 @@ const getUserNames = () => {
 };
 const resetBuzzedUsers = () => {
   users.forEach((user) => {
-    user.buzzStatus = { buzzed: false, time: 0, color: "" };
+    user.buzzStatus = { buzzed: false, time: "0:0:0", color: "" };
   });
 };
 const getBuzzedUsers = () => {
-  return users.reduce(
-    (buzzers, { userName, buzzStatus: { buzzed, time, color } }) => {
+  return users
+    .reduce((buzzers, { userName, buzzStatus: { buzzed, time, color } }) => {
       if (buzzed) {
         buzzers.push({ userName, time, color });
       }
       return buzzers;
-    },
-    []
-  );
+    }, [])
+    .toSorted((firstBuzzer, secondBuzzer) => {
+      return (
+        Number(firstBuzzer.time.split(":").join("")) -
+        Number(secondBuzzer.time.split(":").join(""))
+      );
+    });
 };
 const getRegisteredUsers = () => {
   return users.map(({ userName, connected }) => {
@@ -45,7 +49,8 @@ const getRegisteredUsers = () => {
   });
 };
 const removeRegisteredUser = (userName) => {
-  io.sockets.sockets.get(getUser(userName).id).disconnect();
+  const socket = io.sockets.sockets.get(getUser(userName).id);
+  if (socket) socket.disconnect();
   users = users.filter((user) => {
     return user.userName != userName;
   });
@@ -142,7 +147,7 @@ io.of("/admin").on("connect", (socket) => {
         connected: false,
         buzzStatus: {
           buzzed: false,
-          time: 0,
+          time: "0:0:0",
           color: "",
         },
       });

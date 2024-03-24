@@ -69,7 +69,9 @@ export const joinRoom = (userName, team) => {
   });
 
   socket.on("updatedBuzzed", (data) => {
-    changeHTML(buzzesList(data), buzzesListElement);
+    if (connected) {
+      changeHTML(buzzesList(data), buzzesListElement);
+    }
   });
 
   socket.on("badLogin", (reason) => {
