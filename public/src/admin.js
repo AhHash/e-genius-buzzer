@@ -1,4 +1,4 @@
-import { buzzesList, registeredUsersList } from "./components.js";
+import { buzzesList, registeredUsersList, scorePanels } from "./components.js";
 
 const buzzesListElement = document.querySelector("#buzzes-list");
 const disableButton = document.querySelector("#disable-button");
@@ -7,6 +7,7 @@ const enableButtons = document.querySelectorAll(".enable-button");
 const timer = document.querySelector("#enable-timer");
 const buzzerSound = document.querySelector("#buzzer-sound");
 const rightSide = document.querySelector(".right-side");
+const scoresContainer = document.querySelector("#scores");
 
 let buzerSoundTimeoutId;
 
@@ -38,6 +39,45 @@ let addUserButton;
 let addUserInput;
 let newUserForm;
 let teamInputs;
+let addableUsersItems;
+let scoreUserItem;
+
+const updateAddableUsersListeners = () => {
+  addableUsersItems = document.querySelectorAll(".addable-to-score");
+
+  addableUsersItems.forEach((user) => {
+    user.addEventListener("click", ({ currentTarget }) => {
+      addUserToScoreInput(currentTarget.dataset.username);
+    });
+  });
+};
+
+const addUserToScoreInput = (userName) => {
+  scoreUserItem.innerHTML = `
+    <div class="score-user">
+      <div class="user-info">
+        <h4 class="user-name score-user-name">${userName}</h4>
+      </div>
+      <div class="user-buttons score-buttons">
+        <button data-score="-5" class="user-button score-button red-score-button">-5</button>
+        <button data-score="5" class="user-button score-button green-score-button">+5</button>
+        <button data-score="10" class="user-button score-button blue-score-button white-score-button">+10</button>
+        <button data-score="20" class="user-button score-button red-score-button">+20</button>
+        <button data-score="30" class="user-button score-button green-score-button">+30</button>
+      </div>
+    </div>
+  `;
+
+  document.querySelectorAll(".score-button").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      socket.emit(
+        "changeScore",
+        userName,
+        Number(event.currentTarget.dataset.score)
+      );
+    });
+  });
+};
 
 const initializeRegisteredUsers = (registeredUsers) => {
   rightSide.innerHTML = registeredUsersList(registeredUsers);
@@ -46,7 +86,10 @@ const initializeRegisteredUsers = (registeredUsers) => {
   addUserInput = document.querySelector(".user-input");
   newUserForm = document.querySelector("#new-user-form");
   teamInputs = document.querySelectorAll(".admin-team-button");
+  scoreUserItem = document.querySelector(".score-user-item");
   let teamInput = "red";
+
+  updateAddableUsersListeners();
 
   teamInputs.forEach((teamButton) => {
     teamButton.addEventListener("click", ({ currentTarget }) => {
@@ -74,6 +117,8 @@ const initializeRegisteredUsers = (registeredUsers) => {
     });
   });
 };
+
+scoresContainer.innerHTML = scorePanels();
 
 initializeRegisteredUsers();
 
@@ -148,8 +193,13 @@ socket.on("updatedBuzzed", (data) => {
     }, 500);
   }
   buzzesListElement.innerHTML = buzzesList(data);
+  updateAddableUsersListeners();
 });
 
 socket.on("updateRegisteredUsers", (registeredUsers) => {
   initializeRegisteredUsers(registeredUsers);
+});
+
+socket.on("updatedScores", (teamScores) => {
+  scoresContainer.innerHTML = scorePanels(teamScores);
 });

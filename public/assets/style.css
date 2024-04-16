@@ -498,6 +498,7 @@ h6 {
 }
 
 .left-side {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -509,7 +510,7 @@ h6 {
 
 .users-text {
   font-size: 1.2rem;
-  margin: 1rem 0 0 0;
+  margin: 0;
   text-align: center;
 }
 
@@ -532,7 +533,8 @@ h6 {
   flex-direction: column;
   list-style-type: none;
   padding: 0.3rem 0.8rem;
-  row-gap: 1rem;
+  row-gap: 0.75rem;
+  flex-grow: 1;
 }
 
 .user-item {
@@ -540,7 +542,7 @@ h6 {
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  padding: 0.4rem 1rem;
+  padding: 0.65rem 1rem;
   border: 2px solid rgb(225, 110, 110);
   column-gap: 0.5rem;
 }
@@ -594,6 +596,7 @@ hr {
 .no-registered-users-text {
   text-align: center;
   margin: 0;
+  flex-grow: 1;
 }
 
 .admin-team-buttons {
@@ -631,4 +634,96 @@ hr {
 
 .red-team-indicator {
   background-color: rgb(225, 110, 110);
+}
+
+.added-users-list {
+  height: 42vh;
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+  padding: 0;
+  row-gap: 1rem;
+  overflow: scroll;
+}
+
+.addable-to-score {
+  cursor: pointer;
+}
+
+.score-user {
+  width: 100%;
+}
+
+.score-user-name {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.15rem;
+}
+
+.score-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 0.65rem;
+}
+
+.score-button {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.red-score-button {
+  background-color: rgb(255, 110, 100);
+}
+
+.green-score-button {
+  background-color: rgb(110, 255, 100);
+}
+
+.blue-score-button {
+  background-color: rgb(110, 110, 255);
+}
+
+.red-score-button:hover {
+  background-color: red;
+}
+.green-score-button:hover {
+  background-color: green;
+}
+.blue-score-button:hover {
+  background-color: blue;
+}
+
+.white-score-button {
+  color: white;
+}
+
+.score-panels {
+  position: absolute;
+  top: 2rem;
+  left: 0;
+  width: calc(100% - 4rem);
+  margin: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.score-panel {
+  border: 2px solid black;
+  height: 3rem;
+  width: 3rem;
+  text-align: center;
+  line-height: calc(3rem - 4px);
+  border-radius: 50%;
+}
+
+.score-panel-blue {
+  border-color: blue;
+}
+
+.score-panel-red {
+  border-color: red;
 }

@@ -1,5 +1,5 @@
 import { changeHTML, main } from "./index.js";
-import { connectedPage, buzzesList } from "./components.js";
+import { connectedPage, buzzesList, scorePanels } from "./components.js";
 
 export const joinRoom = (userName, team) => {
   let connected = false;
@@ -11,6 +11,7 @@ export const joinRoom = (userName, team) => {
   let active = false;
   let timerPerSecondId;
   let timerTotalId;
+  let scoresContainer;
 
   clearTimeout(alertResetTimeoutId);
   clearTimeout(alertErrorTimeoutId);
@@ -45,6 +46,7 @@ export const joinRoom = (userName, team) => {
     loginTimoutId = setTimeout(() => {
       connected = true;
       changeHTML(connectedPage(userName));
+      scoresContainer = document.querySelector(".score-panels");
       buzzesListElement = document.querySelector("#buzzes-list");
       buzzer = document.querySelector("#buzzer");
       buzzer.classList.add("inactive");
@@ -109,6 +111,10 @@ export const joinRoom = (userName, team) => {
       changeHTML("", alert);
       alert.classList.add("hidden-alert");
     }, 1750);
+  });
+
+  socket.on("updatedScores", (teamScores) => {
+    changeHTML(scorePanels(teamScores), scoresContainer);
   });
 
   socket.on("disconnect", () => {

@@ -150,7 +150,7 @@ io.of("/admin").on("connect", (socket) => {
         team: team.trim(),
         id: "",
         connected: false,
-        points: 0,
+        score: 0,
         buzzStatus: {
           buzzed: false,
           time: "0:0:0",
@@ -206,6 +206,30 @@ io.of("/admin").on("connect", (socket) => {
 
     io.of("/admin").emit("inactive");
     io.emit("inactive");
+  });
+
+  socket.on("changeScore", (userName, score) => {
+    getUser(userName).score += score;
+
+    const teamScores = users.reduce(
+      (scores, user) => {
+        scores[user.team] += user.score;
+        return scores;
+      },
+      { red: 0, blue: 0 }
+    );
+
+    const usersScores = users.reduce(
+      (scores, user) => {
+        scores[user.team][user.userName] = user.score;
+        return scores;
+      },
+      { red: {}, blue: {} }
+    );
+
+    console.log(usersScores);
+    io.of("/admin").emit("updatedScores", teamScores);
+    io.emit("updatedScores", teamScores);
   });
 });
 

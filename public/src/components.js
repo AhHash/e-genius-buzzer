@@ -27,9 +27,19 @@ export const homePage = () => {
 `;
 };
 
+export const scorePanels = (teamScores = { red: 0, blue: 0 }) => {
+  const { red, blue } = teamScores;
+  return `
+  <div class="score-panels">
+    <div class="score-panel score-panel-red">${red}</div>
+    <div class="score-panel score-panel-blue">${blue}</div>
+  </div>`;
+};
+
 export const connectedPage = (userName, data) => {
   return `
  <div id="connected-page">
+        ${scorePanels()}
         <div class="header">
           <h5 class="header-logo">E-Genius</h5>
           <h3 class="header-username">Username: ${userName}</h3>
@@ -65,7 +75,7 @@ export const buzzesList = (data) => {
             <ol class="buzzes-list-column">
               ${users
                 .map(({ userName, time, color }) => {
-                  return `<li class="buzzes-item ${color}-buzzes">
+                  return `<li class="buzzes-item ${color}-buzzes addable-to-score" data-username="${userName}">
                   ${userName}
                   <div class="buzzes-item-time">${time}</div>
                 </li>`;
@@ -88,13 +98,15 @@ export const buzzesList = (data) => {
 export const registeredUsersList = (registeredUsers = []) => {
   return `
         <h3 class="users-text">Users</h3>
-          <ul class="users-list">
+          <div class="users-list">
+            <hr />
+            <ul class="added-users-list">
           ${
             registeredUsers.length
               ? registeredUsers
                   .map(({ userName, connected, team }) => {
                     return `
-            <li>
+            <li data-username="${userName}" class="addable-to-score">
               <div class="user-item ${connected && "connected"}">
                 <div class="user-info">
                   <h4 class="user-name">${userName}</h4>
@@ -112,8 +124,9 @@ export const registeredUsersList = (registeredUsers = []) => {
                   .join("")
               : `<h4 class="no-registered-users-text">No registered users!</h4>`
           }
+          </ul>
             <hr />
-            <li>
+            <div>
               <form class="user-item" id="new-user-form">
                 <input
                   type="text"
@@ -128,7 +141,10 @@ export const registeredUsersList = (registeredUsers = []) => {
                   <button type="submit" class="user-button" id="add-button">Add</button>
                 </div>
               </form>
-            </li>
-          </ul>
+            </div>
+            <hr />
+            <div class="user-item score-user-item">
+              <h4 class="no-registered-users-text">No selected users!</h4>            </div>
+          </div>
   `;
 };
