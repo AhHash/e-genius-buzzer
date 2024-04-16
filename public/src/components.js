@@ -114,16 +114,16 @@ export const registeredUsersList = (registeredUsers = []) => {
           }
             <hr />
             <li>
-              <div class="user-item">
+              <form class="user-item" id="new-user-form">
                 <input
                   type="text"
                   class="user-input"
                   placeholder="add new user"
                 />
                 <div class="user-buttons">
-                  <button class="user-button" id="add-button">Add</button>
+                  <button type="submit" class="user-button" id="add-button">Add</button>
                 </div>
-              </div>
+              </form>
             </li>
           </ul>
   `;

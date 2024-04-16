@@ -36,12 +36,19 @@ buzzesListElement.innerHTML = buzzesList();
 
 let addUserButton;
 let addUserInput;
+let newUserForm;
 
 const initializeRegisteredUsers = (registeredUsers) => {
   rightSide.innerHTML = registeredUsersList(registeredUsers);
   const deleteUserButtons = document.querySelectorAll(".delete-user");
   addUserButton = document.querySelector("#add-button");
   addUserInput = document.querySelector(".user-input");
+  newUserForm = document.querySelector("#new-user-form");
+
+  newUserForm.addEventListener("submit", (submitEvent) => {
+    submitEvent.preventDefault();
+  });
+
   addUserButton.addEventListener("click", () => {
     registerUser(addUserInput.value);
   });

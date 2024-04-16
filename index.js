@@ -45,7 +45,10 @@ const getRegisteredUsers = () => {
   });
 };
 const removeRegisteredUser = (userName) => {
-  io.sockets.sockets.get(getUser(userName).id).disconnect();
+  const user = getUser(userName);
+  if (user.id) {
+    io.sockets.sockets.get(getUser(userName).id).disconnect();
+  }
   users = users.filter((user) => {
     return user.userName != userName;
   });
