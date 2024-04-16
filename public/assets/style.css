@@ -22,7 +22,7 @@ body {
   width: 100vw;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   #home {
     height: 85vh;
   }
@@ -41,7 +41,7 @@ h6 {
   font-size: 12rem;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   #title {
     font-size: 4rem;
   }
@@ -129,7 +129,7 @@ h6 {
   border-radius: 50%;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   .form {
     display: grid;
     grid-template-areas: "a a" "b c";
@@ -187,7 +187,7 @@ h6 {
   transition: all 0.2s ease-in-out;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   #alert {
     border-radius: 5ps;
     position: static;
@@ -238,7 +238,7 @@ h6 {
   text-align: center;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   #buzzer {
     font-size: 3rem;
     height: 12rem;
@@ -272,7 +272,7 @@ h6 {
   align-items: center;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   #connected-page {
     height: 100%;
     max-width: 95vw;
@@ -347,7 +347,7 @@ h6 {
   border: 2px solid red;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 920px) {
   .buzzes-item {
     text-indent: 0.8rem;
     line-height: 160%;
