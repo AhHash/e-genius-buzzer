@@ -24,8 +24,8 @@ const clearBuzzes = () => {
   socket.emit("clearBuzzes");
 };
 
-const registerUser = (userName) => {
-  socket.emit("registerUser", userName);
+const registerUser = (userName, team) => {
+  socket.emit("registerUser", userName, team);
 };
 
 const removeRegisteredUser = (userName) => {
@@ -37,6 +37,7 @@ buzzesListElement.innerHTML = buzzesList();
 let addUserButton;
 let addUserInput;
 let newUserForm;
+let teamInputs;
 
 const initializeRegisteredUsers = (registeredUsers) => {
   rightSide.innerHTML = registeredUsersList(registeredUsers);
@@ -44,14 +45,29 @@ const initializeRegisteredUsers = (registeredUsers) => {
   addUserButton = document.querySelector("#add-button");
   addUserInput = document.querySelector(".user-input");
   newUserForm = document.querySelector("#new-user-form");
+  teamInputs = document.querySelectorAll(".admin-team-button");
+  let teamInput = "red";
+
+  teamInputs.forEach((teamButton) => {
+    teamButton.addEventListener("click", ({ currentTarget }) => {
+      teamInputs.forEach((teamButton) => {
+        teamButton.classList.remove("selected");
+      });
+      currentTarget.classList.add("selected");
+      teamInput = currentTarget.dataset.team;
+    });
+  });
 
   newUserForm.addEventListener("submit", (submitEvent) => {
     submitEvent.preventDefault();
   });
 
   addUserButton.addEventListener("click", () => {
-    registerUser(addUserInput.value);
+    if (addUserInput.value) {
+      registerUser(addUserInput.value, teamInput);
+    }
   });
+
   deleteUserButtons.forEach((button) => {
     button.addEventListener("click", () => {
       removeRegisteredUser(button.dataset.username);

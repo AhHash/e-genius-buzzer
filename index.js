@@ -44,8 +44,8 @@ const getBuzzedUsers = () => {
     });
 };
 const getRegisteredUsers = () => {
-  return users.map(({ userName, connected }) => {
-    return { userName, connected };
+  return users.map(({ userName, connected, team }) => {
+    return { userName, connected, team };
   });
 };
 const removeRegisteredUser = (userName) => {
@@ -67,7 +67,7 @@ io.of("/").on("connect", (socket) => {
   socket.emit("updatedBuzzed", getBuzzedUsers());
 
   const userName = socket.userName;
-  const team = socket.team;
+  const team = socket.team.trim();
 
   const user = getUser(userName);
 
@@ -83,9 +83,11 @@ io.of("/").on("connect", (socket) => {
   } else if (user.connected) {
     socket.emit("badLogin", "userNameAlreadyConnected");
     socket.disconnect();
+  } else if (team != user.team) {
+    socket.emit("badLogin", "teamNotMatch");
+    socket.disconnect();
   } else {
     user.connected = true;
-    user.team = team;
     user.id = socket.id;
     io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
   }
@@ -135,16 +137,20 @@ io.of("/").on("connect", (socket) => {
 io.of("/admin").on("connect", (socket) => {
   socket.emit("updatedBuzzed", getBuzzedUsers());
   socket.emit("updateRegisteredUsers", getRegisteredUsers());
-  socket.on("registerUser", (userName) => {
-    if (getUserNames().includes(userName)) {
+  socket.on("registerUser", (userName, team) => {
+    if (!userName || !team) {
+      // TODO
+      socket.emit("Please select valid name and team!");
+    } else if (getUserNames().includes(userName)) {
       // TODO
       socket.emit("Username already registered!");
     } else {
       users.push({
         userName: userName.toLowerCase().trim(),
-        team: "",
+        team: team.trim(),
         id: "",
         connected: false,
+        points: 0,
         buzzStatus: {
           buzzed: false,
           time: "0:0:0",

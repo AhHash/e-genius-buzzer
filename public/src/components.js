@@ -92,7 +92,7 @@ export const registeredUsersList = (registeredUsers = []) => {
           ${
             registeredUsers.length
               ? registeredUsers
-                  .map(({ userName, connected }) => {
+                  .map(({ userName, connected, team }) => {
                     return `
             <li>
               <div class="user-item ${connected && "connected"}">
@@ -100,7 +100,7 @@ export const registeredUsersList = (registeredUsers = []) => {
                   <h4 class="user-name">${userName}</h4>
                   <p class="user-status">${
                     connected ? "connected" : "pending"
-                  }</p>
+                  } <span class="user-team-indicator ${team}-team-indicator"></span></p>
                 </div>
                 <div class="user-buttons">
                   <button data-username="${userName}" class="user-button delete-user">X</button>
@@ -120,6 +120,10 @@ export const registeredUsersList = (registeredUsers = []) => {
                   class="user-input"
                   placeholder="add new user"
                 />
+                <div class="admin-team-buttons">
+                  <div data-team="red" class="admin-team-button red-team-button selected"></div>
+                  <div data-team="blue" class="admin-team-button blue-team-button"></div>
+                </div>
                 <div class="user-buttons">
                   <button type="submit" class="user-button" id="add-button">Add</button>
                 </div>
