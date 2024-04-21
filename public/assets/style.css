@@ -236,6 +236,7 @@ h6 {
   font-size: 6rem;
   line-height: calc(14rem - 8px);
   text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 @media screen and (max-width: 765px) {
@@ -712,12 +713,14 @@ hr {
 }
 
 .score-panel {
-  border: 2px solid black;
-  height: 3rem;
-  width: 3rem;
+  border: 4px solid black;
+  height: 6rem;
+  width: 6rem;
   text-align: center;
-  line-height: calc(3rem - 4px);
+  line-height: calc(6rem - 8px);
   border-radius: 50%;
+  font-size: 3rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .score-panel-blue {
