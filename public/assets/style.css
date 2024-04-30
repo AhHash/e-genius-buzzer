@@ -732,7 +732,9 @@ hr {
 }
 
 .spectator-home {
-  position: relative;
+  position: relative !important;
+  align-items: start !important;
+  padding-top: 2.5rem;
 }
 
 #spectator-screen {
@@ -780,7 +782,6 @@ hr {
   max-height: 40vh;
   border-radius: 5px;
   overflow: hidden;
-  flex-direction: row;
 }
 
 #spectator-buzzes-list {
