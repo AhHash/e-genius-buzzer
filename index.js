@@ -10,8 +10,12 @@ const io = new Server(server);
 
 app.use(express.static("./public"));
 app.use("/admin", express.static("./public/assets"));
+app.use("/spectator", express.static("./public/assets"));
 app.get("/admin", (_, res) => {
   res.sendFile(__dirname + "/public/pages/admin.html");
+});
+app.get("/spectator", (_, res) => {
+  res.sendFile(__dirname + "/public/pages/spectator.html");
 });
 
 let acceptBuzzes = false;
@@ -90,6 +94,7 @@ io.of("/").on("connect", (socket) => {
     user.connected = true;
     user.id = socket.id;
     io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
+    io.of("/spectator").emit("updateRegisteredUsers", getRegisteredUsers());
   }
 
   socket.on("buzz", () => {
@@ -119,6 +124,7 @@ io.of("/").on("connect", (socket) => {
       const buzzedUsers = getBuzzedUsers();
 
       io.of("/admin").emit("updatedBuzzed", buzzedUsers);
+      io.of("/spectator").emit("updatedBuzzed", buzzedUsers);
       io.emit("updatedBuzzed", buzzedUsers);
     }
   });
@@ -131,6 +137,7 @@ io.of("/").on("connect", (socket) => {
     });
 
     io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
+    io.of("/spectator").emit("updateRegisteredUsers", getRegisteredUsers());
   });
 });
 
@@ -158,6 +165,7 @@ io.of("/admin").on("connect", (socket) => {
         },
       });
       io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
+      io.of("/spectator").emit("updateRegisteredUsers", getRegisteredUsers());
     }
   });
 
@@ -168,6 +176,7 @@ io.of("/admin").on("connect", (socket) => {
     } else {
       removeRegisteredUser(userName);
       io.of("/admin").emit("updateRegisteredUsers", getRegisteredUsers());
+      io.of("/spectator").emit("updateRegisteredUsers", getRegisteredUsers());
     }
   });
 
@@ -181,9 +190,11 @@ io.of("/admin").on("connect", (socket) => {
     resetBuzzedUsers();
     const buzzedUsers = getBuzzedUsers();
     io.of("/admin").emit("updatedBuzzed", buzzedUsers);
+    io.of("/spectator").emit("updatedBuzzed", buzzedUsers);
     io.emit("updatedBuzzed", buzzedUsers);
 
     io.of("/admin").emit("active", time);
+    io.of("/spectator").emit("active", time);
     io.emit("active", time);
   });
 
@@ -191,6 +202,7 @@ io.of("/admin").on("connect", (socket) => {
     acceptBuzzes = false;
 
     io.of("/admin").emit("inactive");
+    io.of("/spectator").emit("inactive");
     io.emit("inactive");
   });
 
@@ -201,10 +213,13 @@ io.of("/admin").on("connect", (socket) => {
     const buzzedUsers = getBuzzedUsers();
 
     io.of("/admin").emit("cleared");
+    io.of("/spectator").emit("cleared");
     io.of("/admin").emit("updatedBuzzed", buzzedUsers);
+    io.of("/spectator").emit("updatedBuzzed", buzzedUsers);
     io.emit("updatedBuzzed", buzzedUsers);
 
     io.of("/admin").emit("inactive");
+    io.of("/spectator").emit("inactive");
     io.emit("inactive");
   });
 
@@ -229,6 +244,7 @@ io.of("/admin").on("connect", (socket) => {
 
     console.log(usersScores);
     io.of("/admin").emit("updatedScores", teamScores);
+    io.of("/spectator").emit("updatedScores", teamScores);
     io.emit("updatedScores", teamScores);
   });
 });

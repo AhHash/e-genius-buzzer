@@ -95,12 +95,17 @@ export const buzzesList = (data) => {
    `;
 };
 
-export const registeredUsersList = (registeredUsers = []) => {
+export const registeredUsersList = (
+  registeredUsers = [],
+  spectator = false
+) => {
   return `
-        <h3 class="users-text">Users</h3>
-          <div class="users-list">
-            <hr />
-            <ul class="added-users-list">
+        ${spectator ? "" : `<h3 class="users-text">Users</h3>`}
+          <div class="users-list ${spectator ? "spectator-users-list" : ""}">
+            ${spectator ? "" : "<hr />"}
+            <ul class="added-users-list ${
+              spectator ? "spectator-added-users-list" : ""
+            }">
           ${
             registeredUsers.length
               ? registeredUsers
@@ -122,8 +127,11 @@ export const registeredUsersList = (registeredUsers = []) => {
             `;
                   })
                   .join("")
-              : `<h4 class="no-registered-users-text">No registered users!</h4>`
-          }
+              : ""
+          } ${
+    spectator
+      ? ""
+      : `
           </ul>
             <hr />
             <div>
@@ -146,5 +154,8 @@ export const registeredUsersList = (registeredUsers = []) => {
             <div class="user-item score-user-item">
               <h4 class="no-registered-users-text">No selected users!</h4>            </div>
           </div>
+          `
+  }
+          
   `;
 };

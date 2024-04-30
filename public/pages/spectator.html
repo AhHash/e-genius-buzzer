@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/style.css" />
+    <title>E-GENIUS Spectator</title>
+  </head>
+
+  <body>
+    <div id="home" class="spectator-home">
+      <div id="spectator-screen">
+        <div id="scores"></div>
+        <div class="header">
+          <h5 class="header-logo spectator-header">E-Genius</h5>
+        </div>
+        <div class="spectator-buzzes-list-container">
+          <div id="spectator-buzzes-list"></div>
+          <div id="enable-timer" class="spectator-timer">0</div>
+        </div>
+        <div class="spectator-screen-users"></div>
+      </div>
+    </div>
+  </body>
+
+  <script src="../../socket.io/socket.io.js"></script>
+  <script type="module" src="../src/spectator.js"></script>
+</html>
